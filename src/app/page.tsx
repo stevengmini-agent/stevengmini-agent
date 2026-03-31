@@ -63,9 +63,18 @@ export default function Dashboard() {
       <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Shield className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-gray-900">AI Agent Trading Lab</span>
+            <div className="flex items-center space-x-4">
+              <a href="/" className="flex items-center">
+                <Shield className="h-8 w-8 text-primary" />
+                <span className="ml-2 text-xl font-bold text-gray-900">AI Agent Trading Lab</span>
+              </a>
+              <a 
+                href="/onboarding" 
+                className="hidden sm:flex items-center px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <User className="h-4 w-4 mr-2" />
+                User Portal
+              </a>
             </div>
             
             {/* Desktop Menu */}
@@ -118,6 +127,12 @@ export default function Dashboard() {
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
+              <a
+                href="/onboarding"
+                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-gray-100"
+              >
+                👤 User Portal
+              </a>
               <button
                 onClick={() => { setActiveTab('overview'); setMobileMenuOpen(false); }}
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
