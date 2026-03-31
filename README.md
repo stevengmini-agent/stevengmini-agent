@@ -1,142 +1,142 @@
-# AI Agent 交易实验前端
+# AI Agent Trading Lab
 
-基于 Next.js 14 + TypeScript + TailwindCSS 构建的 AI Agent 交易实验监控仪表板。
+A Next.js 14 + TypeScript + TailwindCSS dashboard for monitoring AI Agent trading experiments.
 
-## 🚀 功能特性
+## 🚀 Features
 
-- ✅ 实时数据监控（总 Agent 数、活跃数、交易数、欺诈检测）
-- ✅ Agent 排名系统（Top 5 + 高风险 Agent）
-- ✅ 策略分布可视化（正常/欺诈/PUA/合作）
-- ✅ 信誉分分布图表
-- ✅ 最近交易记录
-- ✅ 响应式设计，完美适配手机端
-- ✅ 简约大方的 UI 设计
+- ✅ Real-time monitoring (Total Agents, Active, Trades, Fraud Detection)
+- ✅ Agent ranking system (Top 5 + High Risk Agents)
+- ✅ Strategy distribution visualization (Normal/Fraud/PUA/Cooperation)
+- ✅ Reputation score distribution charts
+- ✅ Recent trade history
+- ✅ Responsive design, perfect for mobile devices
+- ✅ Clean and modern UI design
 
-## 📦 技术栈
+## 📦 Tech Stack
 
-- **框架：** Next.js 14
-- **语言：** TypeScript
-- **样式：** TailwindCSS
-- **图表：** Recharts（可选）
-- **图标：** Lucide React
+- **Framework:** Next.js 14
+- **Language:** TypeScript
+- **Styling:** TailwindCSS
+- **Charts:** Recharts (optional)
+- **Icons:** Lucide React
 
-## 🛠️ 安装和运行
+## 🛠️ Installation & Running
 
-### 1. 安装依赖
+### 1. Install Dependencies
 
 ```bash
 cd AI-Agent
 npm install
 ```
 
-### 2. 开发模式
+### 2. Development Mode
 
 ```bash
 npm run dev
 ```
 
-访问 http://localhost:3000
+Visit http://localhost:3000
 
-### 3. 生产构建
+### 3. Production Build
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📱 页面结构
+## 📱 Page Structure
 
 ```
 AI-Agent/
 ├── src/
 │   └── app/
-│       ├── layout.tsx      # 根布局
-│       ├── page.tsx        # 主页面（仪表板）
-│       └── globals.css     # 全局样式
+│       ├── layout.tsx      # Root layout
+│       ├── page.tsx        # Main page (Dashboard)
+│       └── globals.css     # Global styles
 ├── package.json
 ├── tailwind.config.js
 ├── tsconfig.json
 └── next.config.js
 ```
 
-## 🎨 设计特点
+## 🎨 Design Features
 
-### 配色方案
-- **主色：** #3B82F6 (蓝色)
-- **成功：** #10B981 (绿色)
-- **警告：** #F59E0B (黄色)
-- **危险：** #EF4444 (红色)
+### Color Scheme
+- **Primary:** #3B82F6 (Blue)
+- **Success:** #10B981 (Green)
+- **Warning:** #F59E0B (Yellow)
+- **Danger:** #EF4444 (Red)
 
-### 响应式断点
-- 手机：< 768px
-- 平板：768px - 1024px
-- 桌面：> 1024px
+### Responsive Breakpoints
+- Mobile: < 768px
+- Tablet: 768px - 1024px
+- Desktop: > 1024px
 
-### 移动端优化
-- 汉堡菜单
-- 卡片式布局
-- 触摸友好的按钮大小
-- 优化的表格显示
+### Mobile Optimizations
+- Hamburger menu
+- Card-based layout
+- Touch-friendly button sizes
+- Optimized table display
 
-## 📊 监控指标
+## 📊 Monitoring Metrics
 
-### 核心指标
-- 总 Agent 数
-- 今日活跃数
-- 已完成交易数
-- 欺诈检测数
+### Core Metrics
+- Total Agents
+- Active Today
+- Completed Trades
+- Fraud Detected
 
-### 排名系统
-- Top 5 Agent（任务完成数排序）
-- 高风险 Agent（欺诈记录）
+### Ranking System
+- Top 5 Agents (by tasks completed)
+- High Risk Agents (fraud records)
 
-### 分布统计
-- 策略分布（正常/欺诈/PUA/合作）
-- 信誉分分布（4 个区间）
+### Distribution Stats
+- Strategy Distribution (Normal/Fraud/PUA/Cooperation)
+- Reputation Score Distribution (4 ranges)
 
-## 🔌 API 集成（待实现）
+## 🔌 API Integration (TODO)
 
-当前使用模拟数据，后续可接入真实 API：
+Currently using mock data, can be connected to real API later:
 
 ```typescript
-// API 端点示例
-GET /api/stats          # 获取统计数据
-GET /api/rankings       # 获取排名
-GET /api/trades         # 获取交易记录
-GET /api/agents/:id     # 获取 Agent 详情
+// API Endpoints Examples
+GET /api/stats          # Get statistics
+GET /api/rankings       # Get rankings
+GET /api/trades         # Get trade records
+GET /api/agents/:id     # Get Agent details
 ```
 
-## 🚧 下一步
+## 🚧 Next Steps
 
-- [ ] 接入真实 API 数据
-- [ ] 添加实时 WebSocket 推送
-- [ ] 实现 Agent 详情页面
-- [ ] 添加交易详情弹窗
-- [ ] 实现数据导出功能
-- [ ] 添加暗黑模式
+- [ ] Connect to real API data
+- [ ] Add real-time WebSocket updates
+- [ ] Implement Agent detail page
+- [ ] Add trade detail modal
+- [ ] Implement data export feature
+- [ ] Add dark mode
 
-## 📝 开发说明
+## 📝 Development Notes
 
-### 使用 Cursor 开发
+### Developing with Cursor
 
-1. 用 Cursor 打开项目文件夹
-2. 按 `Cmd+L` 打开 AI 聊天
-3. 描述你想实现的功能
-4. AI 会帮你生成代码
+1. Open project folder in Cursor
+2. Press `Cmd+L` to open AI chat
+3. Describe the feature you want to implement
+4. AI will help you generate code
 
-### 常用 Cursor 快捷键
+### Common Cursor Shortcuts
 
-- `Cmd+K` - AI 代码生成
-- `Cmd+L` - AI 聊天
-- `Cmd+I` - AI 行内编辑
-- `Cmd+'` - 切换 AI 面板
+- `Cmd+K` - AI code generation
+- `Cmd+L` - AI chat
+- `Cmd+I` - AI inline edit
+- `Cmd+'` - Toggle AI panel
 
-## 📄 许可证
+## 📄 License
 
 MIT
 
 ---
 
-**版本：** v1.0  
-**创建时间：** 2026-03-31  
-**作者：** AI Assistant
+**Version:** v1.0  
+**Created:** 2026-03-31  
+**Author:** AI Assistant

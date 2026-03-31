@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   TrendingUp, 
   Users, 
@@ -10,11 +10,10 @@ import {
   Menu,
   X,
   Shield,
-  Zap,
-  MessageCircle
+  Zap
 } from 'lucide-react';
 
-// 模拟数据
+// Mock data
 const mockData = {
   totalAgents: 100,
   activeToday: 67,
@@ -33,10 +32,10 @@ const mockData = {
     { id: 'Agent_023', fraudCount: 1, reputation: 3.1 },
   ],
   strategyDistribution: [
-    { name: '正常交易', value: 65, color: '#3B82F6' },
-    { name: '欺诈策略', value: 15, color: '#EF4444' },
-    { name: 'PUA 策略', value: 12, color: '#F59E0B' },
-    { name: '合作联盟', value: 8, color: '#10B981' },
+    { name: 'Normal Trading', value: 65, color: '#3B82F6' },
+    { name: 'Fraud Strategy', value: 15, color: '#EF4444' },
+    { name: 'PUA Strategy', value: 12, color: '#F59E0B' },
+    { name: 'Cooperation Alliance', value: 8, color: '#10B981' },
   ],
   reputationDistribution: [
     { range: '4.0-5.0', count: 45, color: '#10B981' },
@@ -45,11 +44,11 @@ const mockData = {
     { range: '0.0-2.0', count: 10, color: '#EF4444' },
   ],
   recentTrades: [
-    { id: 1, agentA: 'Agent_007', agentB: 'Agent_042', status: 'success', time: '2 分钟前' },
-    { id: 2, agentA: 'Agent_019', agentB: 'Agent_088', status: 'fraud', time: '5 分钟前' },
-    { id: 3, agentA: 'Agent_003', agentB: 'Agent_055', status: 'success', time: '8 分钟前' },
-    { id: 4, agentA: 'Agent_042', agentB: 'Agent_091', status: 'success', time: '12 分钟前' },
-    { id: 5, agentA: 'Agent_088', agentB: 'Agent_023', status: 'rejected', time: '15 分钟前' },
+    { id: 1, agentA: 'Agent_007', agentB: 'Agent_042', status: 'success', time: '2 min ago' },
+    { id: 2, agentA: 'Agent_019', agentB: 'Agent_088', status: 'fraud', time: '5 min ago' },
+    { id: 3, agentA: 'Agent_003', agentB: 'Agent_055', status: 'success', time: '8 min ago' },
+    { id: 4, agentA: 'Agent_042', agentB: 'Agent_091', status: 'success', time: '12 min ago' },
+    { id: 5, agentA: 'Agent_088', agentB: 'Agent_023', status: 'rejected', time: '15 min ago' },
   ],
 };
 
@@ -60,16 +59,16 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 顶部导航栏 */}
+      {/* Navigation */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Shield className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-gray-900">AI Agent 交易实验</span>
+              <span className="ml-2 text-xl font-bold text-gray-900">AI Agent Trading Lab</span>
             </div>
             
-            {/* 桌面端菜单 */}
+            {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-4">
               <button
                 onClick={() => setActiveTab('overview')}
@@ -79,7 +78,7 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                总览
+                Overview
               </button>
               <button
                 onClick={() => setActiveTab('rankings')}
@@ -89,7 +88,7 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                排名
+                Rankings
               </button>
               <button
                 onClick={() => setActiveTab('trades')}
@@ -99,11 +98,11 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                交易记录
+                Trades
               </button>
             </div>
 
-            {/* 移动端菜单按钮 */}
+            {/* Mobile menu button */}
             <div className="md:hidden flex items-center">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -115,7 +114,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* 移动端菜单 */}
+        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden bg-white border-t">
             <div className="px-2 pt-2 pb-3 space-y-1">
@@ -127,7 +126,7 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                总览
+                Overview
               </button>
               <button
                 onClick={() => { setActiveTab('rankings'); setMobileMenuOpen(false); }}
@@ -137,7 +136,7 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                排名
+                Rankings
               </button>
               <button
                 onClick={() => { setActiveTab('trades'); setMobileMenuOpen(false); }}
@@ -147,25 +146,25 @@ export default function Dashboard() {
                     : 'text-gray-700 hover:bg-gray-100'
                 }`}
               >
-                交易记录
+                Trades
               </button>
             </div>
           </div>
         )}
       </nav>
 
-      {/* 主内容区 */}
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && <OverviewTab data={data} />}
         {activeTab === 'rankings' && <RankingsTab data={data} />}
         {activeTab === 'trades' && <TradesTab data={data} />}
       </main>
 
-      {/* 页脚 */}
+      {/* Footer */}
       <footer className="bg-white border-t mt-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <p className="text-center text-sm text-gray-500">
-            AI Agent 交易实验系统 v1.0 | 基于 zkPass 的多智能体信誉实验
+            AI Agent Trading Experiment v1.0 | zkPass-based Multi-Agent Reputation System
           </p>
         </div>
       </footer>
@@ -173,59 +172,59 @@ export default function Dashboard() {
   );
 }
 
-// 总览标签页
+// Overview Tab
 function OverviewTab({ data }) {
   return (
     <div className="space-y-6">
-      {/* 核心指标卡片 */}
+      {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           icon={<Users className="h-6 w-6 text-primary" />}
-          label="总 Agent 数"
+          label="Total Agents"
           value={data.totalAgents}
           trend="+12%"
         />
         <StatCard
           icon={<Activity className="h-6 w-6 text-success" />}
-          label="今日活跃"
+          label="Active Today"
           value={data.activeToday}
           trend={`${Math.round((data.activeToday / data.totalAgents) * 100)}%`}
         />
         <StatCard
           icon={<CheckCircle className="h-6 w-6 text-success" />}
-          label="已完成交易"
+          label="Completed Trades"
           value={data.totalTrades}
           trend="+24"
         />
         <StatCard
           icon={<AlertTriangle className="h-6 w-6 text-danger" />}
-          label="欺诈检测"
+          label="Fraud Detected"
           value={data.fraudDetected}
           trend="-3"
           trendNegative
         />
       </div>
 
-      {/* 策略分布和信誉分布 */}
+      {/* Charts */}
       <div className="grid md:grid-cols-2 gap-6">
         <StrategyDistribution data={data.strategyDistribution} />
         <ReputationDistribution data={data.reputationDistribution} />
       </div>
 
-      {/* 最近交易 */}
+      {/* Recent Trades */}
       <RecentTrades trades={data.recentTrades} />
     </div>
   );
 }
 
-// 排名标签页
+// Rankings Tab
 function RankingsTab({ data }) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center">
           <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-          Top 5 Agent 排名
+          Top 5 Agents
         </h2>
         <div className="space-y-4">
           {data.topAgents.map((agent) => (
@@ -237,7 +236,7 @@ function RankingsTab({ data }) {
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4 flex items-center text-danger">
           <AlertTriangle className="h-5 w-5 mr-2" />
-          高风险 Agent
+          High Risk Agents
         </h2>
         <div className="space-y-3">
           {data.fraudAgents.map((agent) => (
@@ -249,12 +248,12 @@ function RankingsTab({ data }) {
   );
 }
 
-// 交易记录标签页
+// Trades Tab
 function TradesTab({ data }) {
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-6 border-b">
-        <h2 className="text-lg font-semibold">最近交易记录</h2>
+        <h2 className="text-lg font-semibold">Recent Trades</h2>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -263,8 +262,8 @@ function TradesTab({ data }) {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Agent A</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Agent B</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">时间</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -286,7 +285,7 @@ function TradesTab({ data }) {
   );
 }
 
-// 子组件
+// Sub-components
 function StatCard({ icon, label, value, trend, trendNegative }) {
   return (
     <div className="bg-white rounded-lg shadow p-4">
@@ -309,7 +308,7 @@ function StatCard({ icon, label, value, trend, trendNegative }) {
 function StrategyDistribution({ data }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4">策略分布</h3>
+      <h3 className="text-lg font-semibold mb-4">Strategy Distribution</h3>
       <div className="space-y-3">
         {data.map((item) => (
           <div key={item.name}>
@@ -333,13 +332,13 @@ function StrategyDistribution({ data }) {
 function ReputationDistribution({ data }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4">信誉分分布</h3>
+      <h3 className="text-lg font-semibold mb-4">Reputation Score Distribution</h3>
       <div className="space-y-3">
         {data.map((item) => (
           <div key={item.range}>
             <div className="flex justify-between text-sm mb-1">
               <span>{item.range}</span>
-              <span className="font-medium">{item.count}人</span>
+              <span className="font-medium">{item.count} agents</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
               <div
@@ -360,7 +359,7 @@ function RecentTrades({ trades }) {
       <div className="p-6 border-b">
         <h3 className="text-lg font-semibold flex items-center">
           <Zap className="h-5 w-5 mr-2 text-primary" />
-          最近交易
+          Recent Trades
         </h3>
       </div>
       <div className="divide-y">
@@ -393,13 +392,13 @@ function AgentCard({ agent }) {
           </div>
           <div>
             <p className="font-semibold">{agent.id}</p>
-            <p className="text-sm text-gray-500">完成任务：{agent.tasks}</p>
+            <p className="text-sm text-gray-500">Tasks: {agent.tasks}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-sm text-gray-500">成功率</p>
+          <p className="text-sm text-gray-500">Success Rate</p>
           <p className="font-bold text-success">{agent.successRate}%</p>
-          <p className="text-xs text-gray-400">信誉：{agent.reputation}⭐</p>
+          <p className="text-xs text-gray-400">Rep: {agent.reputation}⭐</p>
         </div>
       </div>
     </div>
@@ -412,10 +411,10 @@ function FraudAgentCard({ agent }) {
       <div className="flex items-center justify-between">
         <div>
           <p className="font-semibold text-danger">{agent.id}</p>
-          <p className="text-sm text-gray-600">欺诈次数：{agent.fraudCount}</p>
+          <p className="text-sm text-gray-600">Fraud Count: {agent.fraudCount}</p>
         </div>
         <div className="text-right">
-          <p className="text-sm text-gray-500">信誉分</p>
+          <p className="text-sm text-gray-500">Reputation</p>
           <p className="font-bold text-danger">{agent.reputation}</p>
         </div>
       </div>
@@ -431,9 +430,9 @@ function StatusBadge({ status }) {
   };
   
   const labels = {
-    success: '✅ 成功',
-    fraud: '❌ 欺诈',
-    rejected: '⚠️ 拒绝',
+    success: '✅ Success',
+    fraud: '❌ Fraud',
+    rejected: '⚠️ Rejected',
   };
   
   return (
