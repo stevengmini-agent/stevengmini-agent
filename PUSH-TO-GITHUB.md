@@ -112,8 +112,8 @@ git push -u origin main
 3dcfc2f Add deployment complete documentation
 5c33264 Add GitHub deployment scripts
 b13e34a Update to English version
-1766c8f Add Cursor AI 开发指南
-579447d Initial commit: AI Agent 交易实验前端
+1766c8f Add Cursor AI development guide
+579447d Initial commit: AI Agent trading frontend
 ```
 
 **Total:** 5 commits  

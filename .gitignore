@@ -1,32 +1,32 @@
-# 依赖
+# Dependencies
 node_modules/
 .pnp
 .pnp.js
 
-# 构建
+# Build output
 .next/
 out/
 build/
 dist/
 
-# 日志
+# Logs
 *.log
 
-# 系统文件
+# System files
 .DS_Store
 *.pem
 
-# 调试
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# 本地环境
+# Local environment
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# 测试
+# Test artifacts
 coverage/
 .turbo
