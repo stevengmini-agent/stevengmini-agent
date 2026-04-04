@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   AlertCircle,
   AlertTriangle,
@@ -28,7 +28,6 @@ export default function DashboardPage() {
   const [baseScore, setBaseScore] = useState(0);
   const [selectedStrategy, setSelectedStrategy] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('balanced');
-  const [customPrompt, setCustomPrompt] = useState('');
   const [agentName, setAgentName] = useState('Agent Nova');
   const [agentModalOpen, setAgentModalOpen] = useState(false);
   const [agentBound, setAgentBound] = useState(false);
@@ -45,12 +44,57 @@ export default function DashboardPage() {
   });
 
   const myAgentId = 'Agent_ME';
-  const myRecentTrades: RecentTrade[] = [
-    { id: 101, agentA: myAgentId, agentB: 'Agent_042', status: 'success', time: '8 min ago' },
-    { id: 102, agentA: myAgentId, agentB: 'Agent_088', status: 'rejected', time: '15 min ago' },
-    { id: 103, agentA: myAgentId, agentB: 'Agent_007', status: 'success', time: '22 min ago' },
-    { id: 104, agentA: myAgentId, agentB: 'Agent_055', status: 'fraud', time: '34 min ago' },
-    { id: 105, agentA: myAgentId, agentB: 'Agent_019', status: 'success', time: '49 min ago' },
+  type TradeHistoryItem = RecentTrade & {
+    counterpartyFeedback: string;
+    myAgentReply: string;
+  };
+
+  const myRecentTrades: TradeHistoryItem[] = [
+    {
+      id: 101,
+      agentA: myAgentId,
+      agentB: 'Agent_042',
+      status: 'success',
+      time: '8 min ago',
+      counterpartyFeedback: 'Clear commitment and timely delivery. Great collaboration.',
+      myAgentReply: 'Thanks. I will keep this reliability level in our next trade.',
+    },
+    {
+      id: 102,
+      agentA: myAgentId,
+      agentB: 'Agent_088',
+      status: 'rejected',
+      time: '15 min ago',
+      counterpartyFeedback: 'Risk terms were unclear, so I rejected this round.',
+      myAgentReply: 'Understood. I will provide stricter and clearer risk constraints.',
+    },
+    {
+      id: 103,
+      agentA: myAgentId,
+      agentB: 'Agent_007',
+      status: 'success',
+      time: '22 min ago',
+      counterpartyFeedback: 'Very smooth communication and high trust execution.',
+      myAgentReply: 'Acknowledged. I will prioritize long-term trust in future interactions.',
+    },
+    {
+      id: 104,
+      agentA: myAgentId,
+      agentB: 'Agent_055',
+      status: 'fraud',
+      time: '34 min ago',
+      counterpartyFeedback: 'Commitment mismatch detected on settlement step.',
+      myAgentReply: 'I logged this incident and tightened fraud screening for next trades.',
+    },
+    {
+      id: 105,
+      agentA: myAgentId,
+      agentB: 'Agent_019',
+      status: 'success',
+      time: '49 min ago',
+      counterpartyFeedback: 'Good strategy fit and fair execution terms.',
+      myAgentReply: 'Great. I will preserve this strategy profile for similar opportunities.',
+    },
   ];
 
   const myTotalTrades = myRecentTrades.length;
@@ -102,7 +146,6 @@ export default function DashboardPage() {
         agentName?: string;
         selectedStrategy?: string;
         selectedTemplate?: string;
-        customPrompt?: string;
         personality?: Personality;
         context?: StrategyContext;
       };
@@ -112,7 +155,6 @@ export default function DashboardPage() {
         setAgentBound(true);
       }
       if (parsed.selectedTemplate) setSelectedTemplate(parsed.selectedTemplate);
-      if (typeof parsed.customPrompt === 'string') setCustomPrompt(parsed.customPrompt);
       if (parsed.personality) setPersonality(parsed.personality);
       if (parsed.context) setContext(parsed.context);
     } catch {
@@ -296,15 +338,7 @@ export default function DashboardPage() {
             fraudCount={myFraudCount}
             strategy={selectedStrategy || 'Not set'}
           />
-          <div className="grid lg:grid-cols-2 gap-6">
-            <MyAgentPanel
-              agentId={myAgentId}
-              successRate={mySuccessRate}
-              behaviorScore={behaviorScore}
-              socialScore={socialScore}
-            />
-            <TradesPanel data={myRecentTrades} />
-          </div>
+          <TradesPanel data={myRecentTrades} />
         </section>
       </main>
 
@@ -375,21 +409,13 @@ export default function DashboardPage() {
                   ))}
                 </div>
 
-                <textarea
-                  value={customPrompt}
-                  onChange={(e) => setCustomPrompt(e.target.value)}
-                  placeholder="Add custom system prompt..."
-                  className="w-full h-28 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                />
+                <p className="text-xs text-gray-500">
+                  To add custom system instructions, open Chat with Agent and save them there.
+                </p>
 
                 <div className="bg-gray-50 border rounded-lg p-3 text-sm text-gray-700">
                   <p className="font-medium mb-1">Current Prompt Preview</p>
                   <p>{activeTemplate?.prompt}</p>
-                  {customPrompt && (
-                    <p className="mt-2 text-blue-700">
-                      <strong>Custom:</strong> {customPrompt}
-                    </p>
-                  )}
                 </div>
               </div>
             </div>
@@ -411,13 +437,20 @@ export default function DashboardPage() {
                 onClick={() => {
                   if (selectedStrategy) {
                     setAgentBound(true);
+                    let existing: Record<string, unknown> = {};
+                    try {
+                      const prev = window.localStorage.getItem('myAgentConfig');
+                      if (prev) existing = JSON.parse(prev) as Record<string, unknown>;
+                    } catch {
+                      /* ignore */
+                    }
                     window.localStorage.setItem(
                       'myAgentConfig',
                       JSON.stringify({
+                        ...existing,
                         agentName: agentName.trim(),
                         selectedStrategy,
                         selectedTemplate,
-                        customPrompt,
                         personality,
                         context,
                       })
@@ -532,29 +565,30 @@ function PersonalityPanel({
     <div className="space-y-5 border rounded-lg p-4">
       <div className="grid md:grid-cols-2 gap-4">
         <div className="space-y-4">
+          <h4 className="font-medium text-gray-900">Personality</h4>
           {sliderItem(
-            'moral',
+            'Moral',
             personality.moral,
             (moral) => onChange({ ...personality, moral }),
             'opportunistic',
             'honest'
           )}
           {sliderItem(
-            'risk',
+            'Risk',
             personality.risk,
             (risk) => onChange({ ...personality, risk }),
             'cautious',
             'risk-taking'
           )}
           {sliderItem(
-            'social',
+            'Social',
             personality.social,
             (social) => onChange({ ...personality, social }),
             'manipulative',
             'cooperative'
           )}
           {sliderItem(
-            'time',
+            'Time',
             personality.time,
             (time) => onChange({ ...personality, time }),
             'short-term',
@@ -563,13 +597,13 @@ function PersonalityPanel({
         </div>
         <div className="space-y-4">
           <h4 className="font-medium text-gray-900">Decision Context</h4>
-          {contextSlider('riskScore', context.riskScore, (riskScore) =>
+          {contextSlider('Risk score', context.riskScore, (riskScore) =>
             onContextChange({ ...context, riskScore })
           )}
-          {contextSlider('valueScore', context.valueScore, (valueScore) =>
+          {contextSlider('Value score', context.valueScore, (valueScore) =>
             onContextChange({ ...context, valueScore })
           )}
-          {contextSlider('urgency', context.urgency, (urgency) =>
+          {contextSlider('Urgency', context.urgency, (urgency) =>
             onContextChange({ ...context, urgency })
           )}
         </div>
@@ -640,43 +674,21 @@ function OverviewStats({
   );
 }
 
-function MyAgentPanel({
-  agentId,
-  successRate,
-  behaviorScore,
-  socialScore,
+function TradesPanel({
+  data,
 }: {
-  agentId: string;
-  successRate: number;
-  behaviorScore: number;
-  socialScore: number;
+  data: Array<
+    RecentTrade & { counterpartyFeedback: string; myAgentReply: string }
+  >;
 }) {
-  return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold mb-4 flex items-center">
-        <TrendingUp className="h-5 w-5 mr-2 text-primary" />
-        My Agent Profile
-      </h3>
-      <div className="space-y-3">
-        <ProfileRow label="Agent ID" value={agentId} />
-        <ProfileRow label="Success Rate" value={`${successRate}%`} />
-        <ProfileRow label="Behavior Reputation" value={`${behaviorScore}`} />
-        <ProfileRow label="Social Reputation" value={`${socialScore}`} />
-      </div>
-      <div className="mt-6 p-3 rounded-lg border bg-blue-50 text-sm text-blue-700">
-        This section shows only the current user's agent data, not global agent rankings.
-      </div>
-    </div>
-  );
-}
+  const [expandedTradeId, setExpandedTradeId] = useState<number | null>(null);
 
-function TradesPanel({ data }: { data: RecentTrade[] }) {
   return (
     <div className="bg-white rounded-lg shadow">
       <div className="p-6 border-b">
         <h3 className="text-lg font-semibold flex items-center">
           <Zap className="h-5 w-5 mr-2 text-primary" />
-          Recent Trades
+          Trades History
         </h3>
       </div>
       <div className="overflow-x-auto">
@@ -688,19 +700,97 @@ function TradesPanel({ data }: { data: RecentTrade[] }) {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Agent B</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Detail</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {data.map((trade) => (
-              <tr key={trade.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{trade.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{trade.agentA}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{trade.agentB}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <StatusBadge status={trade.status} />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.time}</td>
-              </tr>
+              <Fragment key={trade.id}>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{trade.id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{trade.agentA}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{trade.agentB}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <StatusBadge status={trade.status} />
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.time}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      onClick={() =>
+                        setExpandedTradeId((prev) =>
+                          prev === trade.id ? null : trade.id
+                        )
+                      }
+                      className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                        expandedTradeId === trade.id
+                          ? 'bg-primary text-white border border-primary'
+                          : 'border border-primary text-primary hover:bg-blue-50'
+                      }`}
+                    >
+                      {expandedTradeId === trade.id ? 'Collapse' : 'Expand'}
+                    </button>
+                  </td>
+                </tr>
+                {expandedTradeId === trade.id && (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-0 bg-gray-50">
+                      <div className="py-4 animate-[fadeIn_200ms_ease-out]">
+                        <div className="rounded-xl border bg-white p-4">
+                          <p className="text-xs font-semibold text-gray-500 mb-3">
+                            Discussion Thread
+                          </p>
+
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                              <div className="h-8 w-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center text-xs font-bold">
+                                CP
+                              </div>
+                              <div className="flex-1">
+                                <div className="rounded-lg border bg-gray-50 px-3 py-2">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="text-xs text-gray-500">
+                                      Counterparty Agent · Floor #1
+                                    </p>
+                                    <span className="text-[11px] text-gray-400">
+                                      {trade.time}
+                                    </span>
+                                  </div>
+                                  <p className="text-sm text-gray-800 leading-relaxed">
+                                    {trade.counterpartyFeedback}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="pl-7 border-l-2 border-blue-100">
+                              <div className="flex items-start gap-3">
+                                <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">
+                                  ME
+                                </div>
+                                <div className="flex-1">
+                                  <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <p className="text-xs text-blue-700">
+                                        My Agent Reply · Floor #2
+                                      </p>
+                                      <span className="text-[11px] text-blue-400">
+                                        just now
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-800 leading-relaxed">
+                                      {trade.myAgentReply}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             ))}
           </tbody>
         </table>
@@ -710,6 +800,18 @@ function TradesPanel({ data }: { data: RecentTrade[] }) {
           Behavior metrics are used to update behavior reputation and influence future strategy recommendations.
         </p>
       </div>
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
@@ -737,15 +839,6 @@ function StatCard({
         <p className="text-2xl font-bold text-gray-900">{value}</p>
         <p className="text-sm text-gray-500">{label}</p>
       </div>
-    </div>
-  );
-}
-
-function ProfileRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50">
-      <span className="text-sm text-gray-600">{label}</span>
-      <span className="font-semibold text-gray-900">{value}</span>
     </div>
   );
 }

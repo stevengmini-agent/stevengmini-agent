@@ -10,6 +10,7 @@ type ChatMessage = {
 
 export default function ChatClient({ agentName }: { agentName: string }) {
   const [input, setInput] = useState('');
+  const [customPromptDraft, setCustomPromptDraft] = useState('');
   const [agentContext, setAgentContext] = useState<{
     selectedStrategy?: string;
     selectedTemplate?: string;
@@ -32,10 +33,32 @@ export default function ChatClient({ agentName }: { agentName: string }) {
         customPrompt?: string;
       };
       setAgentContext(parsed);
+      if (typeof parsed.customPrompt === 'string') setCustomPromptDraft(parsed.customPrompt);
     } catch {
       // Ignore broken local cache.
     }
   }, []);
+
+  const saveCustomPrompt = () => {
+    let existing: Record<string, unknown> = {};
+    try {
+      const raw = window.localStorage.getItem('myAgentConfig');
+      if (raw) existing = JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      /* ignore */
+    }
+    const trimmed = customPromptDraft.trim();
+    const next: Record<string, unknown> = { ...existing };
+    if (trimmed) next.customPrompt = trimmed;
+    else delete next.customPrompt;
+    window.localStorage.setItem('myAgentConfig', JSON.stringify(next));
+    setAgentContext((prev) => {
+      const merged = { ...prev };
+      if (trimmed) merged.customPrompt = trimmed;
+      else delete merged.customPrompt;
+      return merged;
+    });
+  };
 
   const systemContext = useMemo(() => {
     const parts = [
@@ -73,7 +96,28 @@ export default function ChatClient({ agentName }: { agentName: string }) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-4">
+        <div className="bg-white rounded-xl shadow border p-4 space-y-2">
+          <p className="text-sm font-medium text-gray-900">Custom system prompt</p>
+          <p className="text-xs text-gray-500">
+            Optional. Appended to your template when the agent reasons in this chat. Saved to this browser only.
+          </p>
+          <textarea
+            value={customPromptDraft}
+            onChange={(e) => setCustomPromptDraft(e.target.value)}
+            placeholder="e.g. Always cite risk limits before recommending a trade..."
+            rows={4}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent"
+          />
+          <button
+            type="button"
+            onClick={saveCustomPrompt}
+            className="inline-flex items-center px-3 py-1.5 text-sm bg-primary text-white rounded-lg hover:bg-blue-700"
+          >
+            Save custom prompt
+          </button>
+        </div>
+
         <div className="bg-white rounded-xl shadow border p-4 space-y-3 min-h-[60vh]">
           <div className="rounded-lg border bg-blue-50 px-3 py-2 text-xs text-blue-700">
             <strong>Agent Context:</strong> {systemContext}
